@@ -1,49 +1,115 @@
-import { NextFunction, Request, Response } from "express";
-import { errorMessage } from "../../../enums/error-message.enum";
+import { Request, Response } from "express";
 import { Route } from "../../../interfaces/route.interface";
-import { AuthController } from "..";
-import { Connection } from "mongoose";
 import { UserModel } from "../../../services/mongoose/models/user.model";
+import { errorMessage } from "../../../enums/error-message.enum";
+import { DatabaseUser, UserDTO } from "../../../interfaces/user.interface";
+import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
+import { expiresIn } from "../../../enums/expires-in.enum";
+import { LoginBody } from "../../../interfaces/login.interface";
+import bcrypt from "bcrypt";
+import { ZodHandler } from "../../../utils/zod.class";
+import { loginSchema } from "../../../utils/zodSchema";
+import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
+import { ParamsDictionary } from "express-serve-static-core";
 
 export class Login {
-  private db: Connection | undefined;
-  private userService: UserModel;
+  private userService: UserModel = new UserModel();
+  private jsonWebTokenHandler: JsonWebTokenHandler = new JsonWebTokenHandler();
+  private zodHandler: ZodHandler = new ZodHandler();
 
-  constructor(private authController: AuthController) {
-    this.db = this.authController.getDatabase();
-    this.userService = new UserModel();
-  }
+  public handler: Route["handler"] = async (
+    request: Request<ParamsDictionary, any, LoginBody>,
+    response: Response
+  ) => {
+    const { email, password } = request.body;
+    let dbUser: DatabaseUser | null = null;
+    let isPasswordValid: boolean = false;
+    let token: string | null = null;
+    let errors: ZodErrorsFormatted = [];
 
-  public handler: Route["handler"] = (request: Request, response: Response) => {
+    try {
+      errors = await this.zodHandler.validationBody(request.body, loginSchema);
+    } catch (error) {
+      response
+        .status(500)
+        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+      return;
+    }
+
+    if (errors.length > 0) {
+      response.status(400).json({ message: errorMessage.BAD_REQUEST, errors });
+      return;
+    }
+
+    try {
+      dbUser = await this.getDatabaseUser(email);
+    } catch (error) {
+      response
+        .status(500)
+        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+      return;
+    }
+
+    if (!dbUser) {
+      response.status(401).json({ message: errorMessage.UNREGISTERED_USER });
+      return;
+    }
+
+    try {
+      isPasswordValid = await this.isPasswordValid(dbUser, password);
+    } catch (error) {
+      response
+        .status(500)
+        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+      return;
+    }
+
+    if (!isPasswordValid) {
+      response.status(401).json({ message: errorMessage.WRONG_PASSWORD });
+      return;
+    }
+
+    try {
+      token = (await this.jsonWebTokenHandler.generateJsonWebToken(
+        this.getUserDto(dbUser),
+        expiresIn["24_HOUR"]
+      )) as string;
+    } catch (error) {
+      response
+        .status(500)
+        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+      return;
+    }
+
     return response.status(200).json({
-      message: "Login Route",
-      requestBody: request.body.msg,
+      user: this.getUserDto(dbUser),
+      token: token,
     });
   };
 
-  public middlewares: Route["localMiddlewares"] = [
-    //-------------------------------------------------------------------------
-    (req: Request, res: Response, next: NextFunction) => {
-      console.log("LOCAL MIDDLEWARE LOGIN 1");
+  private getDatabaseUser = async (
+    email: string
+  ): Promise<DatabaseUser | null> => {
+    try {
+      return await this.userService.findOne(email);
+    } catch (error) {
+      throw error;
+    }
+  };
 
-      if (!req.body.token) {
-        return res
-          .status(401)
-          .json({ message: errorMessage.INVALID_SESSION_TOKEN });
-      }
+  private getUserDto = (user: DatabaseUser): UserDTO => {
+    const { password, ...restUser } = user;
+    return restUser;
+  };
 
-      next();
-    },
-    //-------------------------------------------------------------------------
-    (req: Request, res: Response, next: NextFunction) => {
-      console.log("LOCAL MIDDLEWARE LOGIN 2");
-
-      if (!req.body.msg) {
-        return res.status(400).json({ message: "message not found" });
-      }
-
-      next();
-    },
-    //-------------------------------------------------------------------------
-  ];
+  private isPasswordValid = async (
+    dbUser: DatabaseUser,
+    password: string
+  ): Promise<boolean> => {
+    try {
+      return await bcrypt.compare(password, dbUser.password);
+    } catch (error) {
+      throw error;
+    }
+  };
 }

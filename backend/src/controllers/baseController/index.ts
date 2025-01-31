@@ -1,18 +1,10 @@
 import { Router } from "express";
 import { Route } from "../../interfaces/route.interface";
-import { Connection } from "mongoose";
 
 export abstract class Controller {
   public abstract readonly path: string;
   public router: Router = Router();
   protected abstract readonly routes: Route[];
-
-  public abstract readonly allowDatabase: boolean;
-  protected db: Connection | undefined;
-
-  public setDatabase(Database: Connection | undefined): void {
-    this.db = Database;
-  }
 
   public setRoutes = (): Router | never => {
     for (const route of this.routes) {

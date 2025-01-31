@@ -7,10 +7,9 @@ import { Register } from "./handlers/register";
 export class AuthController extends Controller {
   public path: string = "/auth";
   protected routes: Route[];
-  public allowDatabase: boolean = true;
 
-  private login: Login = new Login(this);
-  private register: Register = new Register(this);
+  private login: Login = new Login();
+  private register: Register = new Register();
 
   constructor() {
     super();
@@ -18,7 +17,6 @@ export class AuthController extends Controller {
       {
         path: "/login",
         method: httpMethod.GET,
-        localMiddlewares: this.login.middlewares,
         handler: this.login.handler,
       },
       {
@@ -27,9 +25,5 @@ export class AuthController extends Controller {
         handler: this.register.handler,
       },
     ];
-  }
-
-  public getDatabase(): typeof this.db {
-    return this.db;
   }
 }

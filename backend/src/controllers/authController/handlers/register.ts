@@ -1,28 +1,26 @@
 import { Request, Response } from "express";
 import { Route } from "../../../interfaces/route.interface";
-import { AuthController } from "..";
-import { Connection } from "mongoose";
 import { UserModel } from "../../../services/mongoose/models/user.model";
 import { UserRole } from "../../../interfaces/user.interface";
 
 export class Register {
-  private db: Connection | undefined;
-  private userService: UserModel;
-
-  constructor(private authController: AuthController) {
-    this.db = this.authController.getDatabase();
-    this.userService = new UserModel();
-  }
+  private userService: UserModel = new UserModel();
 
   public handler: Route["handler"] = (request: Request, response: Response) => {
-    const user = {
-      firstName: "Aurélien",
-      lastName: "Picard",
-      email: "email@mail.com",
-      role: UserRole.USER,
-    };
+    const {
+      firstName = "Name",
+      lastName = "lastname",
+      email = "newemail@mail.com",
+      password = "123Akkodis",
+    } = request.body;
 
-    this.userService.create(user);
+    this.userService.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      role: UserRole.USER,
+    });
 
     return response.status(200).json({
       message: "Register Route",
