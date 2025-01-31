@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Route } from "../../interfaces/route.interface";
 import { Connection } from "mongoose";
 
-export abstract class Controller {
+export abstract class BaseController {
   public abstract readonly path: string;
   public router: Router = Router();
   protected abstract readonly routes: Route[];

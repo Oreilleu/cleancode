@@ -1,10 +1,10 @@
 import { Route } from "../../interfaces/route.interface";
-import { Controller } from "../baseController";
+import { BaseController } from "../baseController";
 import { Login } from "./handlers/login";
 import { httpMethod } from "../../enums/http-methods.enum";
 import { Register } from "./handlers/register";
 
-export class AuthController extends Controller {
+export class AuthController extends BaseController {
   public path: string = "/auth";
   protected routes: Route[];
   public allowDatabase: boolean = true;
