@@ -23,7 +23,7 @@ export class Login {
   ) => {
     const { email, password } = request.body;
     let dbUser: DatabaseUser | null = null;
-    let isPasswordValid: boolean = false;
+    let isWrongPassword: boolean = true;
     let token: string | null = null;
     let errors: ZodErrorsFormatted = [];
 
@@ -36,7 +36,7 @@ export class Login {
       return;
     }
 
-    if (errors.length > 0) {
+    if (this.zodHandler.isValidationFail(errors)) {
       response.status(400).json({ message: errorMessage.BAD_REQUEST, errors });
       return;
     }
@@ -50,13 +50,13 @@ export class Login {
       return;
     }
 
-    if (!dbUser) {
+    if (this.isUserNotRegistered(dbUser)) {
       response.status(401).json({ message: errorMessage.UNREGISTERED_USER });
       return;
     }
 
     try {
-      isPasswordValid = await this.isPasswordValid(dbUser, password);
+      isWrongPassword = await this.isPasswordValid(dbUser, password);
     } catch (error) {
       response
         .status(500)
@@ -64,7 +64,7 @@ export class Login {
       return;
     }
 
-    if (!isPasswordValid) {
+    if (isWrongPassword) {
       response.status(401).json({ message: errorMessage.WRONG_PASSWORD });
       return;
     }
@@ -111,5 +111,9 @@ export class Login {
     } catch (error) {
       throw error;
     }
+  };
+
+  private isUserNotRegistered = (user: DatabaseUser | null): user is null => {
+    return user === null;
   };
 }
