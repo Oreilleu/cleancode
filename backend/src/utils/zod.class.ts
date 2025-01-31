@@ -20,4 +20,8 @@ export class ZodHandler {
       throw error;
     }
   };
+
+  public isValidationFail = (errors: ZodErrorsFormatted): boolean => {
+    return errors.length > 0;
+  };
 }

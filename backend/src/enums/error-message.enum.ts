@@ -10,4 +10,9 @@ export enum errorMessage {
   INVALID_TYPE_EMAIL = "Le type de l'email doit être de type string.",
   EMPTY_PASSWORD = "Le mot de passe est obligatoire.",
   INVALID_TYPE_PASSWORD = " Le type du mot de passe doit être de type string.",
+  UNSECURED_PASSWORD = "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+  EMPTY_FIRSTNAME = "Le prénom est obligatoire.",
+  INVALID_TYPE_FIRSTNAME = "Le type du prénom doit être de type string.",
+  EMPTY_LASTNAME = "Le nom est obligatoire.",
+  INVALID_TYPE_LASTNAME = "Le type du nom doit être de type string.",
 }

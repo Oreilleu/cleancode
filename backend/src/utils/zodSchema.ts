@@ -18,8 +18,32 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string().optional(),
-  email: z.string().email({ message: errorMessage.BAD_EMAIL }),
-  password: z.string().regex(REGEX_VALID_PASSWORD),
+  firstName: z
+    .string({
+      required_error: errorMessage.EMPTY_FIRSTNAME,
+      invalid_type_error: errorMessage.INVALID_TYPE_FIRSTNAME,
+    })
+    .max(255)
+    .nonempty({ message: errorMessage.EMPTY_FIRSTNAME }),
+  lastName: z
+    .string({
+      required_error: errorMessage.EMPTY_LASTNAME,
+      invalid_type_error: errorMessage.INVALID_TYPE_PASSWORD,
+    })
+    .max(255)
+    .nonempty({ message: errorMessage.EMPTY_LASTNAME }),
+  email: z
+    .string({
+      required_error: errorMessage.EMPTY_EMAIL,
+      invalid_type_error: errorMessage.INVALID_TYPE_EMAIL,
+    })
+    .email({ message: errorMessage.BAD_EMAIL })
+    .nonempty({ message: errorMessage.EMPTY_EMAIL }),
+  password: z
+    .string({
+      required_error: errorMessage.EMPTY_PASSWORD,
+      invalid_type_error: errorMessage.INVALID_TYPE_PASSWORD,
+    })
+    .regex(REGEX_VALID_PASSWORD, { message: errorMessage.UNSECURED_PASSWORD })
+    .nonempty({ message: errorMessage.EMPTY_PASSWORD }),
 });
