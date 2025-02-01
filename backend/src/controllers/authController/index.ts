@@ -16,12 +16,12 @@ export class AuthController extends Controller {
     this.routes = [
       {
         path: "/login",
-        method: httpMethod.GET,
+        method: httpMethod.POST,
         handler: this.login.handler,
       },
       {
         path: "/register",
-        method: httpMethod.GET,
+        method: httpMethod.POST,
         handler: this.register.handler,
       },
     ];

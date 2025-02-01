@@ -22,13 +22,7 @@ export class Register {
     request: Request<ParamsDictionary, any, RegisterBody>,
     response: Response
   ) => {
-    // const body = request.body;
-    const body: RegisterBody = {
-      firstName: "",
-      lastName: "1",
-      email: "test",
-      password: "1",
-    };
+    const body = request.body;
 
     let errors: ZodErrorsFormatted = [];
     let token: string | null = null;

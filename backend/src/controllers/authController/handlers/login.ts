@@ -56,7 +56,7 @@ export class Login {
     }
 
     try {
-      isWrongPassword = await this.isPasswordValid(dbUser, password);
+      isWrongPassword = !(await this.isPasswordValid(dbUser, password));
     } catch (error) {
       response
         .status(500)
