@@ -1,4 +1,6 @@
+import { ParamsDictionary } from "express-serve-static-core";
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import { Route } from "../../../interfaces/route.interface";
 import { UserModel } from "../../../services/mongoose/models/user.model";
 import { errorMessage } from "../../../enums/error-message.enum";
@@ -6,11 +8,10 @@ import { DatabaseUser, UserDTO } from "../../../interfaces/user.interface";
 import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
 import { expiresIn } from "../../../enums/expires-in.enum";
 import { LoginBody } from "../../../interfaces/login.interface";
-import bcrypt from "bcrypt";
 import { ZodHandler } from "../../../utils/zod.class";
 import { loginSchema } from "../../../utils/zodSchema";
 import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
-import { ParamsDictionary } from "express-serve-static-core";
+import { httpStatusCode } from "../../../enums/http-status-code.enum";
 
 export class Login {
   private userService: UserModel = new UserModel();
@@ -31,13 +32,15 @@ export class Login {
       errors = await this.zodHandler.validationBody(request.body, loginSchema);
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (this.zodHandler.isValidationFail(errors)) {
-      response.status(400).json({ message: errorMessage.BAD_REQUEST, errors });
+      response
+        .status(httpStatusCode.BAD_REQUEST)
+        .json({ message: errorMessage.BAD_REQUEST, errors });
       return;
     }
 
@@ -45,13 +48,15 @@ export class Login {
       dbUser = await this.getDatabaseUser(email);
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (this.isUserNotRegistered(dbUser)) {
-      response.status(401).json({ message: errorMessage.UNREGISTERED_USER });
+      response
+        .status(httpStatusCode.UNAUTHORIZED)
+        .json({ message: errorMessage.UNREGISTERED_USER });
       return;
     }
 
@@ -59,13 +64,15 @@ export class Login {
       isWrongPassword = !(await this.isPasswordValid(dbUser, password));
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (isWrongPassword) {
-      response.status(401).json({ message: errorMessage.WRONG_PASSWORD });
+      response
+        .status(httpStatusCode.UNAUTHORIZED)
+        .json({ message: errorMessage.WRONG_PASSWORD });
       return;
     }
 
@@ -76,12 +83,12 @@ export class Login {
       )) as string;
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
-    return response.status(200).json({
+    return response.status(httpStatusCode.OK).json({
       user: this.getUserDto(dbUser),
       token: token,
     });

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import { Route } from "../../../interfaces/route.interface";
 import { UserModel } from "../../../services/mongoose/models/user.model";
 import { UserDTO, UserRole } from "../../../interfaces/user.interface";
@@ -8,10 +9,10 @@ import { ZodHandler } from "../../../utils/zod.class";
 import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
 import { registerSchema } from "../../../utils/zodSchema";
 import { errorMessage } from "../../../enums/error-message.enum";
-import bcrypt from "bcrypt";
 import { DEFAULT_BCRYPT_SALT } from "../../../utils/constant";
 import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
 import { expiresIn } from "../../../enums/expires-in.enum";
+import { httpStatusCode } from "../../../enums/http-status-code.enum";
 
 export class Register {
   private userService: UserModel = new UserModel();
@@ -23,7 +24,6 @@ export class Register {
     response: Response
   ) => {
     const body = request.body;
-
     let errors: ZodErrorsFormatted = [];
     let token: string | null = null;
 
@@ -31,12 +31,14 @@ export class Register {
       errors = await this.zodHandler.validationBody(body, registerSchema);
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
     }
 
     if (this.zodHandler.isValidationFail(errors)) {
-      response.status(400).json({ message: errorMessage.BAD_REQUEST, errors });
+      response
+        .status(httpStatusCode.BAD_REQUEST)
+        .json({ message: errorMessage.BAD_REQUEST, errors });
       return;
     }
 
@@ -48,19 +50,16 @@ export class Register {
       body.password = hashPassword;
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     try {
-      this.userService.create({
-        ...body,
-        role: UserRole.USER,
-      });
+      this.createUser(body);
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
@@ -72,12 +71,12 @@ export class Register {
       )) as string;
     } catch (error) {
       response
-        .status(500)
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
-    return response.status(201).json({
+    return response.status(httpStatusCode.CREATED).json({
       user: this.getUserDto(body),
       token: token,
     });
@@ -86,5 +85,12 @@ export class Register {
   private getUserDto = (user: RegisterBody): UserDTO => {
     const { password, ...restUser } = user;
     return { ...restUser, role: UserRole.USER };
+  };
+
+  private createUser = async (user: RegisterBody) => {
+    return await this.userService.create({
+      ...user,
+      role: UserRole.USER,
+    });
   };
 }
