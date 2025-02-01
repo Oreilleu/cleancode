@@ -10,29 +10,53 @@ export class UserModel {
   }
 
   public async create(user: DatabaseUser): Promise<DatabaseUser> {
-    return this.model.create(user);
+    try {
+      return this.model.create(user);
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async findById(userId: string): Promise<DatabaseUser | null> {
-    return this.model.findById(userId).lean();
+    try {
+      return this.model.findById(userId).lean();
+    } catch (error) {
+      throw error;
+    }
   }
 
-  public async findOne(email: string): Promise<DatabaseUser | null> {
-    return this.model.findOne({ email }).lean();
+  public async findByEmail(email: string): Promise<DatabaseUser | null> {
+    try {
+      return this.model.findOne({ email }).lean();
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async findAll(): Promise<DatabaseUser[]> {
-    return this.model.find().lean();
+    try {
+      return this.model.find().lean();
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async update(
     userId: string,
     user: DatabaseUser
   ): Promise<DatabaseUser | null> {
-    return this.model.findByIdAndUpdate(userId, user, { new: true }).lean();
+    try {
+      return this.model.findByIdAndUpdate(userId, user, { new: true }).lean();
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async delete(userId: string): Promise<DatabaseUser | null> {
-    return this.model.findByIdAndDelete(userId).lean();
+    try {
+      return this.model.findByIdAndDelete(userId).lean();
+    } catch (error) {
+      throw error;
+    }
   }
 }

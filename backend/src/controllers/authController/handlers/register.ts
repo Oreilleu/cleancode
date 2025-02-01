@@ -56,8 +56,18 @@ export class Register {
     }
 
     try {
-      this.createUser(body);
-    } catch (error) {
+      await this.createUser(body);
+    } catch (error: any) {
+      const EMAIL_ALREADY_REGISTERED =
+        error.name === "MongoServerError" && error.code === 11000;
+
+      if (EMAIL_ALREADY_REGISTERED) {
+        response
+          .status(httpStatusCode.CONFLICT)
+          .json({ message: errorMessage.ALREADY_REGISTERED_EMAIL });
+        return;
+      }
+
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
@@ -88,9 +98,13 @@ export class Register {
   };
 
   private createUser = async (user: RegisterBody) => {
-    return await this.userService.create({
-      ...user,
-      role: UserRole.USER,
-    });
+    try {
+      return await this.userService.create({
+        ...user,
+        role: UserRole.USER,
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 }

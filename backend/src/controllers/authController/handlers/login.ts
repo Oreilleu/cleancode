@@ -98,7 +98,7 @@ export class Login {
     email: string
   ): Promise<DatabaseUser | null> => {
     try {
-      return await this.userService.findOne(email);
+      return await this.userService.findByEmail(email);
     } catch (error) {
       throw error;
     }
