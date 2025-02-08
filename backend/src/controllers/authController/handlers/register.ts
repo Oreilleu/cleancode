@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { Route } from "../../../interfaces/route.interface";
 import { UserModel } from "../../../services/mongoose/models/user.model";
-import { UserDTO, UserRole } from "../../../interfaces/user.interface";
+import { UserDTO } from "../../../interfaces/user.interface";
 import { ParamsDictionary } from "express-serve-static-core";
 import { RegisterBody } from "../../../interfaces/register.interface";
 import { ZodHandler } from "../../../utils/zod.class";
@@ -13,15 +13,14 @@ import { DEFAULT_BCRYPT_SALT } from "../../../utils/constant";
 import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
 import { expiresIn } from "../../../enums/expires-in.enum";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-import { UserRole } from "../../../enums/user-role.enum";
 import { MongooseService } from "../../../services/mongoose/mongoose.service";
-
+import { UserRole } from "../../../enums/user-role.enum";
 export class Register {
   private jsonWebTokenHandler: JsonWebTokenHandler = new JsonWebTokenHandler();
   private zodHandler: ZodHandler = new ZodHandler();
   private userService!: UserModel;
 
-  constructor(private authController: AuthController) {
+  constructor() {
     MongooseService.get().then((mongooseService) => {
       this.userService = mongooseService.userService;
     });

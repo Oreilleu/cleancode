@@ -12,11 +12,17 @@ import { ZodHandler } from "../../../utils/zod.class";
 import { loginSchema } from "../../../utils/zodSchema";
 import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-
+import { MongooseService } from "../../../services/mongoose/mongoose.service";
 export class Login {
   private jsonWebTokenHandler: JsonWebTokenHandler = new JsonWebTokenHandler();
   private zodHandler: ZodHandler = new ZodHandler();
   private userService!: UserModel;
+  
+  constructor() {
+     MongooseService.get().then((mongooseService) => {
+      this.userService = mongooseService.userService;
+    });
+  }
 
   public handler: Route["handler"] = async (
     request: Request<ParamsDictionary, any, LoginBody>,
@@ -28,11 +34,6 @@ export class Login {
     let token: string | null = null;
     let errors: ZodErrorsFormatted = [];
     
-  constructor(private authController: AuthController) {
-     MongooseService.get().then((mongooseService) => {
-      this.userService = mongooseService.userService;
-    });
-  }
 
     try {
       errors = await this.zodHandler.validationBody(request.body, loginSchema);

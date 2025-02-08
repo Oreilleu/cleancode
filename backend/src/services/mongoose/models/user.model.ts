@@ -1,9 +1,9 @@
-import { model, Model } from "mongoose";
+import { Model } from "mongoose";
 import { DatabaseUser } from "../../../interfaces/user.interface";
 import { UserSchema } from "../schema/user.schema";
 import { MongooseService } from "../../mongoose/mongoose.service";
 export class UserModel {
-  private model: Model<User>;
+  private model: Model<DatabaseUser>;
   readonly mongooseService: MongooseService;
 
   constructor(mongooseService: MongooseService) {
