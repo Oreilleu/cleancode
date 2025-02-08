@@ -7,29 +7,23 @@ import { Register } from "./handlers/register";
 export class AuthController extends BaseController {
   public path: string = "/auth";
   protected routes: Route[];
-  public allowDatabase: boolean = true;
 
-  private login: Login = new Login(this);
-  private register: Register = new Register(this);
+  private login: Login = new Login();
+  private register: Register = new Register();
 
   constructor() {
     super();
     this.routes = [
       {
         path: "/login",
-        method: httpMethod.GET,
-        localMiddlewares: this.login.middlewares,
+        method: httpMethod.POST,
         handler: this.login.handler,
       },
       {
         path: "/register",
-        method: httpMethod.GET,
+        method: httpMethod.POST,
         handler: this.register.handler,
       },
     ];
-  }
-
-  public getDatabase(): typeof this.db {
-    return this.db;
   }
 }

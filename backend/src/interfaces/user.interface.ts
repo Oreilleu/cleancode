@@ -1,8 +1,11 @@
 import { UserRole } from "../enums/user-role.enum";
 
-export interface User {
+export interface DatabaseUser {
   firstName: string;
   lastName: string;
   email: string;
-  role?: UserRole;
+  password: string;
+  role: UserRole;
 }
+
+export type UserDTO = Omit<DatabaseUser, "password">;
