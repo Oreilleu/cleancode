@@ -26,7 +26,7 @@ export class Server {
     });
   }
 
-  public async initializeDb(): Promise<void> {
+  public async initializeDatabase(): Promise<void> {
     await DatabaseManager.connectAll();
   }
 }
