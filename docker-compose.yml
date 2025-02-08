@@ -1,0 +1,55 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      target: ${DOCKER_ENV:-dev}
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /usr/app/node_modules
+      - ./backend/nodemon.json:/app/nodemon.json
+    environment:
+      - NODE_ENV=${DOCKER_ENV:-dev}
+      - SERVER_PORT=${SERVER_PORT:-3000}
+    ports:
+      - "8080:${SERVER_PORT:-3000}"
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    command: mongod --quiet --logpath /dev/null
+    ports:
+      - 27018:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mdp
+      MONGO_INITDB_DATABASE: volt
+    volumes:
+      - ./mongo-data:/data/db
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mdp
+      POSTGRES_DB: volt
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "80:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true

@@ -5,12 +5,14 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --include=dev
 
 # Stage 2: developpement stage
 FROM base AS dev
 
 COPY . .
+
+ENV NODE_ENV=development
 
 EXPOSE ${SERVER_PORT}
 

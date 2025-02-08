@@ -4,14 +4,15 @@ import { Route } from "../../../interfaces/route.interface";
 import { AuthController } from "..";
 import { Connection } from "mongoose";
 import { UserModel } from "../../../services/mongoose/models/user.model";
+import { MongooseService } from "../../../services/mongoose/mongoose.service";
 
 export class Login {
-  private db: Connection | undefined;
-  private userService: UserModel;
+  private userService!: UserModel;
 
   constructor(private authController: AuthController) {
-    this.db = this.authController.getDatabase();
-    this.userService = new UserModel();
+     MongooseService.get().then((mongooseService) => {
+      this.userService = mongooseService.userService;
+    });
   }
 
   public handler: Route["handler"] = (request: Request, response: Response) => {

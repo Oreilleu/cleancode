@@ -10,9 +10,6 @@ export abstract class BaseController {
   public abstract readonly allowDatabase: boolean;
   protected db: Connection | undefined;
 
-  public setDatabase(Database: Connection | undefined): void {
-    this.db = Database;
-  }
 
   public setRoutes = (): Router | never => {
     for (const route of this.routes) {

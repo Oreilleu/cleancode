@@ -1,22 +1,63 @@
-import mongoose, { Connection } from "mongoose";
+import { IDatabaseConnection } from "../../types/database.interface";
+import { UserModel } from "./models/user.model";
+import mongoose, { Mongoose } from "mongoose";
+export class MongooseService implements IDatabaseConnection<Mongoose, void> {
+  private static instance: MongooseService | undefined;
+  public userService: UserModel;
+  public mongoose: Mongoose;
 
-export class MongooseService {
-  private database: Connection | undefined = undefined;
+  private constructor(mongoose: Mongoose) {
+    this.mongoose = mongoose;
+    this.userService = new UserModel(this);
+  }
 
-  public async connectDatabase(): Promise<void> {
+  public static async get(): Promise<MongooseService> {
+    if (this.instance !== undefined) {
+      return this.instance;
+    }
+    
     try {
-      const mongooseInstance = await mongoose.connect(
-        process.env.MONGODB_URI || ""
-      );
-      this.database = mongooseInstance.connection;
-      console.log("Database connected");
+      const connection = await this.connect();
+      this.instance = new MongooseService(connection);
+      return this.instance;
     } catch (error) {
-      this.database = undefined;
-      console.error("Database connection error: ", error);
+      console.error("Erreur lors de l'obtention de l'instance MongooseService:", error);
+      throw error;
     }
   }
 
-  public getDatabase(): mongoose.Connection | undefined {
-    return this.database;
+  public static async connect(): Promise<Mongoose> {
+    try {
+      const connection = await mongoose.connect(
+        process.env.MONGO_DB_URI || "",
+        {
+          auth: {
+            username: process.env.MONGO_DB_USERNAME,
+            password: process.env.MONGO_DB_PASSWORD,
+          },
+          authSource: "admin",
+          dbName: process.env.DATABASE_NAME,
+        }
+      );
+
+      if (!connection) {
+        throw new Error("Failed to connect to MongoDB");
+      }
+
+      return connection;
+    } catch (error) {
+      console.error("Erreur lors de la connexion MongoDB:", error);
+      throw error;
+    }
+  }
+
+  async disconnect(): Promise<void> {
+    try {
+      await mongoose.disconnect();
+      console.log("Déconnexion MongoDB réussie.");
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion MongoDB:", error);
+      throw error;
+    }
   }
 }

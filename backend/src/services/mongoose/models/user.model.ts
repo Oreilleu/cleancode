@@ -1,12 +1,15 @@
 import { model, Model } from "mongoose";
 import { User } from "../../../interfaces/user.interface";
 import { UserSchema } from "../schema/user.schema";
-
+import { MongooseService } from "../../mongoose/mongoose.service";
 export class UserModel {
   private model: Model<User>;
+  readonly mongooseService: MongooseService;
 
-  constructor() {
-    this.model = model<User>("User", UserSchema);
+  constructor(mongooseService: MongooseService) {
+    this.mongooseService = mongooseService;
+    const mongoose = this.mongooseService.mongoose;
+    this.model = mongoose.model("User", UserSchema);
   }
 
   public async create(user: User): Promise<User> {

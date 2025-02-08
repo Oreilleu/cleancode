@@ -1,10 +1,9 @@
 import { Application, RequestHandler } from "express";
-import { Controller } from "../controllers/baseController";
+import { BaseController } from "../controllers/baseController";
 import { Connection } from "mongoose";
-import { MongooseService } from "../services/mongoose/mongoose.service";
+import { DatabaseManager } from "../services/database/database.manager";
 
 export class Server {
-  private mongoose = new MongooseService();
   public database: Connection | undefined;
 
   constructor(private app: Application, private readonly port: number) {}
@@ -21,18 +20,13 @@ export class Server {
     });
   }
 
-  public loadControllers(controllers: Controller[]): void {
-    controllers.forEach((controller: Controller) => {
-      if (controller.allowDatabase) {
-        controller.setDatabase(this.database);
-      }
-
+  public loadControllers(controllers: BaseController[]): void {
+    controllers.forEach((controller: BaseController) => {
       this.app.use(controller.path, controller.setRoutes());
     });
   }
 
-  public async initialize(): Promise<void> {
-    await this.mongoose.connectDatabase();
-    this.database = this.mongoose.getDatabase();
+  public async initializeDb(): Promise<void> {
+    await DatabaseManager.connectAll();
   }
 }

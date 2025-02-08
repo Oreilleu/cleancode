@@ -23,7 +23,7 @@ export class AuthController extends BaseController {
       },
       {
         path: "/register",
-        method: httpMethod.GET,
+        method: httpMethod.POST,
         handler: this.register.handler,
       },
     ];
