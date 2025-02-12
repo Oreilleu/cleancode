@@ -1,5 +1,6 @@
+import { UserRole } from '../../../enums/user-role.enum';
 import { Schema } from "mongoose";
-import { DatabaseUser, UserRole } from "../../../interfaces/user.interface";
+import { DatabaseUser } from "../../../interfaces/user.interface";
 import { REGEX_VALID_PASSWORD } from "../../../utils/constant";
 
 export const UserSchema = new Schema<DatabaseUser>(

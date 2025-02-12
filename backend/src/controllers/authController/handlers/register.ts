@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { Route } from "../../../interfaces/route.interface";
 import { UserModel } from "../../../services/mongoose/models/user.model";
-import { UserDTO, UserRole } from "../../../interfaces/user.interface";
+import { UserDTO } from "../../../interfaces/user.interface";
 import { ParamsDictionary } from "express-serve-static-core";
 import { RegisterBody } from "../../../interfaces/register.interface";
 import { ZodHandler } from "../../../utils/zod.class";
@@ -13,12 +13,19 @@ import { DEFAULT_BCRYPT_SALT } from "../../../utils/constant";
 import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
 import { expiresIn } from "../../../enums/expires-in.enum";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-
+import { MongooseService } from "../../../services/mongoose/mongoose.service";
+import { UserRole } from "../../../enums/user-role.enum";
 export class Register {
-  private userService: UserModel = new UserModel();
   private jsonWebTokenHandler: JsonWebTokenHandler = new JsonWebTokenHandler();
   private zodHandler: ZodHandler = new ZodHandler();
+  private userService!: UserModel;
 
+  constructor() {
+    MongooseService.get().then((mongooseService) => {
+      this.userService = mongooseService.userService;
+    });
+  }
+  
   public handler: Route["handler"] = async (
     request: Request<ParamsDictionary, any, RegisterBody>,
     response: Response
