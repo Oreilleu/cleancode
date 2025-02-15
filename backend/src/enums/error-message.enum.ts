@@ -1,3 +1,5 @@
+// TODO: REFACTOR
+
 export enum errorMessage {
   INTERNAL_SERVER_ERROR = "Erreur interne du serveur.",
   UNREGISTERED_USER = "Utilisateur non enregistré.",
@@ -15,4 +17,14 @@ export enum errorMessage {
   INVALID_TYPE_FIRSTNAME = "Le type du prénom doit être de type string.",
   EMPTY_LASTNAME = "Le nom est obligatoire.",
   INVALID_TYPE_LASTNAME = "Le type du nom doit être de type string.",
+  EMPTY_MODEL = "Le modèle est obligatoire.",
+  INVALID_TYPE_MODEL = "Le type du modèle doit être de type string.",
+  EMPTY_MAINTENANCE_GAP_MONTH = "Le mois de l'intervalle de maintenance est obligatoire.",
+  INVALID_TYPE_MAINTENANCE_GAP_MONTH = "Le type du mois de l'intervalle de maintenance doit être de type number.",
+  EMPTY_MAINTENANCE_USAGE_DAY = "Le jour de l'utilisation de la maintenance est obligatoire.",
+  INVALID_TYPE_MAINTENANCE_USAGE_DAY = "Le type du jour de l'utilisation de la maintenance doit être de type number.",
+  NEGATIVE_MAINTENANCE_GAP_MONTH = "Le mois de l'intervalle de maintenance doit être un nombre positif.",
+  NEGATIVE_MAINTENANCE_USAGE_DAY = "Le jour de l'utilisation de la maintenance doit être un nombre positif.",
+  EMPTY_IS_AVAILABLE = "La disponibilité est obligatoire.",
+  INVALID_TYPE_IS_AVAILABLE = "Le type de la disponibilité doit être de type boolean.",
 }

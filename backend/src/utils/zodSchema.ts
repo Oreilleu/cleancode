@@ -47,3 +47,37 @@ export const registerSchema = z.object({
     .regex(REGEX_VALID_PASSWORD, { message: errorMessage.UNSECURED_PASSWORD })
     .nonempty({ message: errorMessage.EMPTY_PASSWORD }),
 });
+
+export const scooterSchema = z.object({
+  model: z
+    .string({
+      required_error: errorMessage.EMPTY_MODEL,
+      invalid_type_error: errorMessage.INVALID_TYPE_MODEL,
+    })
+    .nonempty({ message: errorMessage.EMPTY_MODEL }),
+  maintenanceGapMonth: z
+    .number({
+      required_error: errorMessage.EMPTY_MAINTENANCE_GAP_MONTH,
+      invalid_type_error: errorMessage.INVALID_TYPE_MAINTENANCE_GAP_MONTH,
+    })
+    .int()
+    .positive({ message: errorMessage.NEGATIVE_MAINTENANCE_GAP_MONTH }),
+  maintenanceUsageDay: z
+    .number({
+      required_error: errorMessage.EMPTY_MAINTENANCE_USAGE_DAY,
+      invalid_type_error: errorMessage.INVALID_TYPE_MAINTENANCE_USAGE_DAY,
+    })
+    .int()
+    .positive({ message: errorMessage.NEGATIVE_MAINTENANCE_USAGE_DAY }),
+  isAvailable: z.boolean({
+    required_error: errorMessage.EMPTY_IS_AVAILABLE,
+    invalid_type_error: errorMessage.INVALID_TYPE_IS_AVAILABLE,
+  }),
+});
+
+export const scooterEditSchema = z.object({
+  model: z.string().optional(),
+  maintenanceGapMonth: z.number().int().positive().optional(),
+  maintenanceUsageDay: z.number().int().positive().optional(),
+  isAvailable: z.boolean().optional(),
+});
