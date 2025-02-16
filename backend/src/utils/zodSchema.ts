@@ -81,3 +81,39 @@ export const scooterEditSchema = z.object({
   maintenanceUsageDay: z.number().int().positive().optional(),
   isAvailable: z.boolean().optional(),
 });
+
+export const partSchema = z.object({
+  scooterModel: z
+    .string({
+      required_error: errorMessage.EMPTY_SCOOTER_MODEL,
+      invalid_type_error: errorMessage.INVALID_TYPE_SCOOTER_MODEL,
+    })
+    .nonempty({ message: errorMessage.EMPTY_SCOOTER_MODEL }),
+  partName: z
+    .string({
+      required_error: errorMessage.EMPTY_PART_NAME,
+      invalid_type_error: errorMessage.INVALID_TYPE_PART_NAME,
+    })
+    .nonempty({ message: errorMessage.EMPTY_PART_NAME }),
+  quantity: z
+    .number({
+      required_error: errorMessage.EMPTY_QUANTITY,
+      invalid_type_error: errorMessage.INVALID_TYPE_QUANTITY,
+    })
+    .int()
+    .positive({ message: errorMessage.NEGATIVE_QUANTITY }),
+  threshold: z
+    .number({
+      required_error: errorMessage.EMPTY_THRESHOLD,
+      invalid_type_error: errorMessage.INVALID_TYPE_THRESHOLD,
+    })
+    .int()
+    .positive({ message: errorMessage.NEGATIVE_THRESHOLD }),
+});
+
+export const partEditSchema = z.object({
+  scooterModel: z.string().optional(),
+  partName: z.string().optional(),
+  quantity: z.number().int().positive().optional(),
+  threshold: z.number().int().positive().optional(),
+});

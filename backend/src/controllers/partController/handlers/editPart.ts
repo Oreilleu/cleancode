@@ -1,25 +1,25 @@
 import { Request, Response } from "express";
-import { httpStatusCode } from "../../../enums/http-status-code.enum";
+import { PartBody } from "../../../interfaces/part.interface";
 import { Route } from "../../../interfaces/route.interface";
-import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
+import { PartModel } from "../../../services/sequelize/models/part.model";
 import { ZodHandler } from "../../../utils/zod.class";
-import { scooterEditSchema } from "../../../utils/zodSchema";
 import { ParamsDictionary } from "express-serve-static-core";
-import { ScooterBody } from "../../../interfaces/scooter.interface";
+import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { errorMessage } from "../../../enums/error-message.enum";
+import { partEditSchema } from "../../../utils/zodSchema";
 
-export class EditScooter {
-  private scooterModel: ScooterModel = new ScooterModel();
+export class EditPart {
+  private partModel: PartModel = new PartModel();
   private zodHandler: ZodHandler = new ZodHandler();
 
   public handler: Route["handler"] = async (
-    request: Request<ParamsDictionary, any, Partial<ScooterBody>>,
+    request: Request<ParamsDictionary, any, Partial<PartBody>>,
     response: Response
   ) => {
     try {
       const errors = await this.zodHandler.validationBody(
         request.body,
-        scooterEditSchema
+        partEditSchema
       );
 
       if (this.zodHandler.isValidationFail(errors)) {
@@ -36,19 +36,16 @@ export class EditScooter {
     }
 
     try {
-      const scooter = await this.scooterModel.edit(
-        request.params.id,
-        request.body
-      );
+      const part = await this.partModel.edit(request.params.id, request.body);
 
-      if (!scooter) {
+      if (!part) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Scooter non trouvé" });
+          .json({ message: "Pièce non trouvée" });
         return;
       }
 
-      response.status(httpStatusCode.OK).json(scooter);
+      response.status(httpStatusCode.OK).json(part);
     } catch (error: any) {
       const isUuidUnvalid =
         error.name === "SequelizeDatabaseError" &&

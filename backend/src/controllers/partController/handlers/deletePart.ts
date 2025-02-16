@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
+import { errorMessage } from "../../../enums/error-message.enum";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
-import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
 import { PartModel } from "../../../services/sequelize/models/part.model";
 
-export class DeleteScooter {
-  private scooterModel: ScooterModel = new ScooterModel();
+export class DeletePart {
   private partModel: PartModel = new PartModel();
 
   public handler: Route["handler"] = async (
@@ -13,18 +12,14 @@ export class DeleteScooter {
     response: Response
   ) => {
     try {
-      const scooter = await this.scooterModel.findById(request.params.id);
+      const deletedPart = await this.partModel.delete(request.params.id);
 
-      if (!scooter) {
+      if (!deletedPart) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Scooter non trouvé" });
+          .json({ message: "Pièce non trouvée" });
         return;
       }
-
-      await this.partModel.deleteByScooterModel(scooter.get().model);
-
-      await this.scooterModel.delete(request.params.id);
 
       response.status(httpStatusCode.OK).json();
     } catch (error: any) {
@@ -39,7 +34,9 @@ export class DeleteScooter {
         return;
       }
 
-      response.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({ error });
+      response
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
     }
   };
 }

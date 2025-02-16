@@ -86,6 +86,21 @@ export class ScooterModel {
     }
   }
 
+  public async findByModel(
+    scooterModel: string
+  ): Promise<Model<ScooterDatabase> | null> {
+    try {
+      if (ScooterModel.model) {
+        return await ScooterModel.model.findOne({
+          where: { model: scooterModel },
+        });
+      }
+      throw new Error("Scooter model is not defined");
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async findAll(): Promise<Model<ScooterDatabase>[]> {
     try {
       if (ScooterModel.model) {

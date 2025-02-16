@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
-import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
 import { PartModel } from "../../../services/sequelize/models/part.model";
 
-export class DeleteScooter {
-  private scooterModel: ScooterModel = new ScooterModel();
+export class GetOnePart {
   private partModel: PartModel = new PartModel();
 
   public handler: Route["handler"] = async (
@@ -13,20 +11,16 @@ export class DeleteScooter {
     response: Response
   ) => {
     try {
-      const scooter = await this.scooterModel.findById(request.params.id);
+      const part = await this.partModel.findById(request.params.id);
 
-      if (!scooter) {
+      if (!part) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Scooter non trouvé" });
+          .json({ message: "Pièce non trouvé." });
         return;
       }
 
-      await this.partModel.deleteByScooterModel(scooter.get().model);
-
-      await this.scooterModel.delete(request.params.id);
-
-      response.status(httpStatusCode.OK).json();
+      response.status(httpStatusCode.OK).json(part);
     } catch (error: any) {
       const isUuidUnvalid =
         error.name === "SequelizeDatabaseError" &&
@@ -38,7 +32,6 @@ export class DeleteScooter {
           .json({ message: "L'id n'est pas valide" });
         return;
       }
-
       response.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({ error });
     }
   };
