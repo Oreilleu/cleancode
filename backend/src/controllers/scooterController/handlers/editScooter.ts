@@ -7,6 +7,7 @@ import { scooterEditSchema } from "../../../utils/zodSchema";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ScooterBody } from "../../../interfaces/scooter.interface";
 import { errorMessage } from "../../../enums/error-message.enum";
+import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
 
 export class EditScooter {
   private scooterModel: ScooterModel = new ScooterModel();
@@ -50,17 +51,12 @@ export class EditScooter {
 
       response.status(httpStatusCode.OK).json(scooter);
     } catch (error: any) {
-      const isUuidUnvalid =
-        error.name === "SequelizeDatabaseError" &&
-        error.parent.code === "22P02";
-
-      if (isUuidUnvalid) {
+      if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
           .json({ message: "L'id n'est pas valide" });
         return;
       }
-
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: errorMessage.INTERNAL_SERVER_ERROR });

@@ -7,6 +7,7 @@ import { ParamsDictionary } from "express-serve-static-core";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { errorMessage } from "../../../enums/error-message.enum";
 import { partEditSchema } from "../../../utils/zodSchema";
+import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
 
 export class EditPart {
   private partModel: PartModel = new PartModel();
@@ -47,11 +48,7 @@ export class EditPart {
 
       response.status(httpStatusCode.OK).json(part);
     } catch (error: any) {
-      const isUuidUnvalid =
-        error.name === "SequelizeDatabaseError" &&
-        error.parent.code === "22P02";
-
-      if (isUuidUnvalid) {
+      if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
           .json({ message: "L'id n'est pas valide" });

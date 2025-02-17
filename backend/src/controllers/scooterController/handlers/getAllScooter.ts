@@ -12,7 +12,8 @@ export class GetAllScooter {
   ) => {
     try {
       const scooters = await this.scooterModel.findAll();
-      response.status(httpStatusCode.OK).json(scooters);
+
+      response.status(httpStatusCode.OK).json({ scooters });
     } catch (error) {
       response.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({ error });
     }
