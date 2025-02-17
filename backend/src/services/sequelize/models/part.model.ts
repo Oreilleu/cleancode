@@ -1,7 +1,8 @@
-import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
+import { Model, ModelStatic, Sequelize } from "sequelize";
 import { SequelizeService } from "../sequelize.service";
 import { PartBody, PartDatabase } from "src/interfaces/part.interface";
 import { ScooterModel } from "./scooter.model";
+import { partOptions, partSchema } from "../schemas/part.schema";
 
 export class PartModel {
   private static model: ModelStatic<Model<any, any>> | null = null;
@@ -30,44 +31,7 @@ export class PartModel {
 
   private defineModel() {
     if (this.sequelize && !PartModel.model) {
-      PartModel.model = this.sequelize.define(
-        "part",
-        {
-          id: {
-            type: DataTypes.UUID,
-            primaryKey: true,
-            defaultValue: DataTypes.UUIDV4,
-          },
-          scooterModel: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-          partName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-          quantity: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-            allowNull: false,
-          },
-          threshold: {
-            type: DataTypes.INTEGER,
-            defaultValue: 5,
-            allowNull: false,
-          },
-        },
-        {
-          timestamps: true,
-          freezeTableName: true,
-          indexes: [
-            {
-              unique: true,
-              fields: ["scooterModel", "partName"],
-            },
-          ],
-        }
-      );
+      PartModel.model = this.sequelize.define("part", partSchema, partOptions);
     }
   }
 

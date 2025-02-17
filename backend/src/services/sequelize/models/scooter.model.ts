@@ -2,8 +2,9 @@ import {
   ScooterBody,
   ScooterDatabase,
 } from "../../../interfaces/scooter.interface";
-import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
+import { Model, ModelStatic, Sequelize } from "sequelize";
 import { SequelizeService } from "../sequelize.service";
+import { scooterOptions, scooterSchema } from "../schemas/scooter.schema";
 
 export class ScooterModel {
   private static model: ModelStatic<Model<any, any>> | null = null;
@@ -33,31 +34,8 @@ export class ScooterModel {
     if (this.sequelize && !ScooterModel.model) {
       ScooterModel.model = this.sequelize.define(
         "scooter",
-        {
-          id: {
-            type: DataTypes.UUID,
-            primaryKey: true,
-            defaultValue: DataTypes.UUIDV4,
-          },
-          model: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-          },
-          maintenanceGapMonth: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-          },
-          maintenanceUsageDay: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-          },
-          isAvailable: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: true,
-          },
-        },
-        { timestamps: true, freezeTableName: true }
+        scooterSchema,
+        scooterOptions
       );
     }
   }
