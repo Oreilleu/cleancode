@@ -4,14 +4,17 @@ import {
   ScooterBody,
   ScooterDatabase,
 } from "../../../interfaces/scooter.interface";
-import { ZodHandler } from "../../../utils/zod.class";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-import { errorMessage } from "../../../enums/error-message.enum";
-import { scooterSchema } from "../../../utils/zodSchema";
 import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
 import { Model } from "sequelize";
+import { zodScooterSchema } from "../../../utils/zod/schema/scooter.schema";
+import {
+  scooterErrorMessage,
+  serverErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class CreateScooter {
   private zodHandler: ZodHandler = new ZodHandler();
@@ -27,19 +30,19 @@ export class CreateScooter {
     try {
       errors = await this.zodHandler.validationBody(
         request.body,
-        scooterSchema
+        zodScooterSchema
       );
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (this.zodHandler.isValidationFail(errors)) {
       response
         .status(httpStatusCode.BAD_REQUEST)
-        .json({ message: errorMessage.BAD_REQUEST, errors });
+        .json({ message: serverErrorMessage.BAD_REQUEST, errors });
       return;
     }
 
@@ -53,20 +56,20 @@ export class CreateScooter {
       if (isUniqueConstraintError) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: "Le modèle du scooter doit être unique." });
+          .json({ message: scooterErrorMessage.MODEL_UNIQUE });
         return;
       }
 
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (!createdScooter) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 

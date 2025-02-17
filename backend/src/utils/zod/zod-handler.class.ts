@@ -1,4 +1,4 @@
-import { ZodErrorsFormatted } from "../interfaces/zod-validation.interface";
+import { ZodErrorsFormatted } from "../../interfaces/zod-validation.interface";
 import { ZodError, ZodObject, ZodRawShape } from "zod";
 
 export class ZodHandler {

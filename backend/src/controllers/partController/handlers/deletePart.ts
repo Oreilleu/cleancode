@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
-import { errorMessage } from "../../../enums/error-message.enum";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
 import { PartModel } from "../../../services/sequelize/models/part.model";
 import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
+import {
+  partErrorMessage,
+  sequelizeErrorMessage,
+  serverErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class DeletePart {
   private partModel: PartModel = new PartModel();
@@ -18,7 +22,7 @@ export class DeletePart {
       if (!deletedPart) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Pièce non trouvée" });
+          .json({ message: partErrorMessage.PART_NOT_FOUND });
         return;
       }
 
@@ -27,12 +31,12 @@ export class DeletePart {
       if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: "L'id n'est pas valide" });
+          .json({ message: sequelizeErrorMessage.INVALID_UUID });
         return;
       }
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
     }
   };
 }

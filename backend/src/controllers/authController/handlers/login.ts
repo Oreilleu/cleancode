@@ -3,23 +3,27 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { Route } from "../../../interfaces/route.interface";
 import { UserModel } from "../../../services/mongoose/models/user.model";
-import { errorMessage } from "../../../enums/error-message.enum";
 import { DatabaseUser, UserDTO } from "../../../interfaces/user.interface";
 import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
 import { expiresIn } from "../../../enums/expires-in.enum";
 import { LoginBody } from "../../../interfaces/login.interface";
-import { ZodHandler } from "../../../utils/zod.class";
-import { loginSchema } from "../../../utils/zodSchema";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { MongooseService } from "../../../services/mongoose/mongoose.service";
+import { zodLoginSchema } from "../../../utils/zod/schema/user.schema";
+import {
+  serverErrorMessage,
+  userErrorMessage,
+} from "../../../enums/error-message.enum";
+
 export class Login {
   private jsonWebTokenHandler: JsonWebTokenHandler = new JsonWebTokenHandler();
   private zodHandler: ZodHandler = new ZodHandler();
   private userService!: UserModel;
-  
+
   constructor() {
-     MongooseService.get().then((mongooseService) => {
+    MongooseService.get().then((mongooseService) => {
       this.userService = mongooseService.userService;
     });
   }
@@ -33,21 +37,23 @@ export class Login {
     let isWrongPassword: boolean = true;
     let token: string | null = null;
     let errors: ZodErrorsFormatted = [];
-    
 
     try {
-      errors = await this.zodHandler.validationBody(request.body, loginSchema);
+      errors = await this.zodHandler.validationBody(
+        request.body,
+        zodLoginSchema
+      );
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (this.zodHandler.isValidationFail(errors)) {
       response
         .status(httpStatusCode.BAD_REQUEST)
-        .json({ message: errorMessage.BAD_REQUEST, errors });
+        .json({ message: serverErrorMessage.BAD_REQUEST, errors });
       return;
     }
 
@@ -56,14 +62,14 @@ export class Login {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (this.isUserNotRegistered(dbUser)) {
       response
         .status(httpStatusCode.UNAUTHORIZED)
-        .json({ message: errorMessage.UNREGISTERED_USER });
+        .json({ message: userErrorMessage.UNREGISTERED_USER });
       return;
     }
 
@@ -72,14 +78,14 @@ export class Login {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
     if (isWrongPassword) {
       response
         .status(httpStatusCode.UNAUTHORIZED)
-        .json({ message: errorMessage.WRONG_PASSWORD });
+        .json({ message: userErrorMessage.WRONG_PASSWORD });
       return;
     }
 
@@ -91,7 +97,7 @@ export class Login {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 

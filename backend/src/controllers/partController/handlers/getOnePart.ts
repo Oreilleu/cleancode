@@ -3,6 +3,10 @@ import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
 import { PartModel } from "../../../services/sequelize/models/part.model";
 import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
+import {
+  partErrorMessage,
+  sequelizeErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class GetOnePart {
   private partModel: PartModel = new PartModel();
@@ -17,7 +21,7 @@ export class GetOnePart {
       if (!part) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Pièce non trouvé." });
+          .json({ message: partErrorMessage.PART_NOT_FOUND });
         return;
       }
 
@@ -26,7 +30,7 @@ export class GetOnePart {
       if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: "L'id n'est pas valide" });
+          .json({ message: sequelizeErrorMessage.INVALID_UUID });
         return;
       }
 

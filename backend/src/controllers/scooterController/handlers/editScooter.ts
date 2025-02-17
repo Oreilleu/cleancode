@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
 import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
-import { ZodHandler } from "../../../utils/zod.class";
-import { scooterEditSchema } from "../../../utils/zodSchema";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ScooterBody } from "../../../interfaces/scooter.interface";
-import { errorMessage } from "../../../enums/error-message.enum";
 import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
+import { zodScooterEditSchema } from "../../../utils/zod/schema/scooter.schema";
+import {
+  scooterErrorMessage,
+  sequelizeErrorMessage,
+  serverErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class EditScooter {
   private scooterModel: ScooterModel = new ScooterModel();
@@ -20,19 +24,19 @@ export class EditScooter {
     try {
       const errors = await this.zodHandler.validationBody(
         request.body,
-        scooterEditSchema
+        zodScooterEditSchema
       );
 
       if (this.zodHandler.isValidationFail(errors)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: errorMessage.BAD_REQUEST, errors });
+          .json({ message: serverErrorMessage.BAD_REQUEST, errors });
         return;
       }
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
@@ -45,7 +49,7 @@ export class EditScooter {
       if (!scooter) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Scooter non trouvé" });
+          .json({ message: scooterErrorMessage.SCOOTER_NOT_FOUND });
         return;
       }
 
@@ -54,12 +58,12 @@ export class EditScooter {
       if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: "L'id n'est pas valide" });
+          .json({ message: sequelizeErrorMessage.INVALID_UUID });
         return;
       }
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
     }
   };
 }

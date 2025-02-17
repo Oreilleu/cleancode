@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { errorMessage } from "../../../enums/error-message.enum";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
 import { PartModel } from "../../../services/sequelize/models/part.model";
+import { serverErrorMessage } from "../../../enums/error-message.enum";
 
 export class GetAllPart {
   private partModel: PartModel = new PartModel();
@@ -17,7 +17,7 @@ export class GetAllPart {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
   };

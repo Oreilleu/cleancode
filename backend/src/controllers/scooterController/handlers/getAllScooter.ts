@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
-import { Route } from "src/interfaces/route.interface";
+import { Route } from "../../../interfaces/route.interface";
 
 export class GetAllScooter {
   private scooterModel: ScooterModel = new ScooterModel();

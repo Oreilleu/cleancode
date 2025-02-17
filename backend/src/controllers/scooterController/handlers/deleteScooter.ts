@@ -4,6 +4,10 @@ import { Route } from "../../../interfaces/route.interface";
 import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
 import { PartModel } from "../../../services/sequelize/models/part.model";
 import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
+import {
+  scooterErrorMessage,
+  sequelizeErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class DeleteScooter {
   private scooterModel: ScooterModel = new ScooterModel();
@@ -19,7 +23,7 @@ export class DeleteScooter {
       if (!scooter) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Scooter non trouvé" });
+          .json({ message: scooterErrorMessage.SCOOTER_NOT_FOUND });
         return;
       }
 
@@ -32,7 +36,7 @@ export class DeleteScooter {
       if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: "L'id n'est pas valide" });
+          .json({ message: sequelizeErrorMessage.INVALID_UUID });
         return;
       }
 

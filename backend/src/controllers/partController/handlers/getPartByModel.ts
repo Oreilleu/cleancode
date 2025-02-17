@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { Route } from "../../../interfaces/route.interface";
 import { PartModel } from "../../../services/sequelize/models/part.model";
+import { scooterErrorMessage } from "../../../enums/error-message.enum";
 
 export class GetPartByModel {
   private partModel: PartModel = new PartModel();
@@ -16,7 +17,7 @@ export class GetPartByModel {
 
       if (!part) {
         response.status(httpStatusCode.NOT_FOUND).json({
-          message: `Le modèle de scooter  n'existe pas`,
+          message: scooterErrorMessage.SCOOTER_NOT_FOUND,
         });
         return;
       }

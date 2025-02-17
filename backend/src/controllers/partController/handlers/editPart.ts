@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import { PartBody } from "../../../interfaces/part.interface";
 import { Route } from "../../../interfaces/route.interface";
 import { PartModel } from "../../../services/sequelize/models/part.model";
-import { ZodHandler } from "../../../utils/zod.class";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ParamsDictionary } from "express-serve-static-core";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-import { errorMessage } from "../../../enums/error-message.enum";
-import { partEditSchema } from "../../../utils/zodSchema";
 import { isUuidUnvalidError } from "../../../utils/sequelize-uuid-unvalid-error";
+import { zodPartEditSchema } from "../../../utils/zod/schema/partSchema";
+import {
+  partErrorMessage,
+  sequelizeErrorMessage,
+  serverErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class EditPart {
   private partModel: PartModel = new PartModel();
@@ -20,19 +24,19 @@ export class EditPart {
     try {
       const errors = await this.zodHandler.validationBody(
         request.body,
-        partEditSchema
+        zodPartEditSchema
       );
 
       if (this.zodHandler.isValidationFail(errors)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: errorMessage.BAD_REQUEST, errors });
+          .json({ message: serverErrorMessage.BAD_REQUEST, errors });
         return;
       }
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
@@ -42,7 +46,7 @@ export class EditPart {
       if (!part) {
         response
           .status(httpStatusCode.NOT_FOUND)
-          .json({ message: "Pièce non trouvée" });
+          .json({ message: partErrorMessage.PART_NOT_FOUND });
         return;
       }
 
@@ -51,13 +55,13 @@ export class EditPart {
       if (isUuidUnvalidError(error)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: "L'id n'est pas valide" });
+          .json({ message: sequelizeErrorMessage.INVALID_UUID });
         return;
       }
 
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
     }
   };
 }

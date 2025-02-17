@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
 import { PartModel } from "../../../services/sequelize/models/part.model";
 import { ScooterModel } from "../../../services/sequelize/models/scooter.model";
-import { ZodHandler } from "../../../utils/zod.class";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ParamsDictionary } from "express-serve-static-core";
 import { PartBody } from "../../../interfaces/part.interface";
 import { Route } from "../../../interfaces/route.interface";
-import { partSchema } from "../../../utils/zodSchema";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-import { errorMessage } from "../../../enums/error-message.enum";
+import { zodPartSchema } from "../../../utils/zod/schema/partSchema";
+import {
+  partErrorMessage,
+  scooterErrorMessage,
+  serverErrorMessage,
+} from "../../../enums/error-message.enum";
 
 export class CreatePart {
   private zodHandler: ZodHandler = new ZodHandler();
@@ -21,19 +25,19 @@ export class CreatePart {
     try {
       const errors = await this.zodHandler.validationBody(
         request.body,
-        partSchema
+        zodPartSchema
       );
 
       if (this.zodHandler.isValidationFail(errors)) {
         response
           .status(httpStatusCode.BAD_REQUEST)
-          .json({ message: errorMessage.BAD_REQUEST, errors });
+          .json({ message: serverErrorMessage.BAD_REQUEST, errors });
         return;
       }
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
@@ -44,14 +48,14 @@ export class CreatePart {
 
       if (!scooter) {
         response.status(httpStatusCode.NOT_FOUND).json({
-          message: `Le modèle de scooter n'existe pas`,
+          message: scooterErrorMessage.SCOOTER_NOT_FOUND,
         });
         return;
       }
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
@@ -63,13 +67,13 @@ export class CreatePart {
 
       if (existingPart) {
         response.status(httpStatusCode.BAD_REQUEST).json({
-          message: "Cette pièce existe déjà pour ce modèle de scooter",
+          message: partErrorMessage.PART_ALREADY_EXISTS,
         });
         return;
       }
     } catch (error) {
       response.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
-        message: errorMessage.INTERNAL_SERVER_ERROR,
+        message: serverErrorMessage.INTERNAL_SERVER_ERROR,
       });
     }
 
@@ -83,7 +87,7 @@ export class CreatePart {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
   };

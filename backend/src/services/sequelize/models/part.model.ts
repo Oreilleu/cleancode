@@ -1,6 +1,6 @@
 import { Model, ModelStatic, Sequelize } from "sequelize";
 import { SequelizeService } from "../sequelize.service";
-import { PartBody, PartDatabase } from "src/interfaces/part.interface";
+import { PartBody, PartDatabase } from "../../../interfaces/part.interface";
 import { ScooterModel } from "./scooter.model";
 import { partOptions, partSchema } from "../schemas/part.schema";
 
