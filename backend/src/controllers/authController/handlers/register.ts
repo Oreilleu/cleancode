@@ -5,16 +5,20 @@ import { UserModel } from "../../../services/mongoose/models/user.model";
 import { UserDTO } from "../../../interfaces/user.interface";
 import { ParamsDictionary } from "express-serve-static-core";
 import { RegisterBody } from "../../../interfaces/register.interface";
-import { ZodHandler } from "../../../utils/zod.class";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ZodErrorsFormatted } from "../../../interfaces/zod-validation.interface";
-import { registerSchema } from "../../../utils/zodSchema";
-import { errorMessage } from "../../../enums/error-message.enum";
+import {
+  serverErrorMessage,
+  userErrorMessage,
+} from "../../../enums/error-message.enum";
 import { DEFAULT_BCRYPT_SALT } from "../../../utils/constant";
 import { JsonWebTokenHandler } from "../../../utils/jsonwebtoken.class";
 import { expiresIn } from "../../../enums/expires-in.enum";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
 import { MongooseService } from "../../../services/mongoose/mongoose.service";
 import { UserRole } from "../../../enums/user-role.enum";
+import { zodRegisterSchema } from "../../../utils/zod/schema/user.schema";
+
 export class Register {
   private jsonWebTokenHandler: JsonWebTokenHandler = new JsonWebTokenHandler();
   private zodHandler: ZodHandler = new ZodHandler();
@@ -25,7 +29,7 @@ export class Register {
       this.userService = mongooseService.userService;
     });
   }
-  
+
   public handler: Route["handler"] = async (
     request: Request<ParamsDictionary, any, RegisterBody>,
     response: Response
@@ -35,17 +39,17 @@ export class Register {
     let token: string | null = null;
 
     try {
-      errors = await this.zodHandler.validationBody(body, registerSchema);
+      errors = await this.zodHandler.validationBody(body, zodRegisterSchema);
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
     }
 
     if (this.zodHandler.isValidationFail(errors)) {
       response
         .status(httpStatusCode.BAD_REQUEST)
-        .json({ message: errorMessage.BAD_REQUEST, errors });
+        .json({ message: serverErrorMessage.BAD_REQUEST, errors });
       return;
     }
 
@@ -58,7 +62,7 @@ export class Register {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
@@ -71,13 +75,13 @@ export class Register {
       if (EMAIL_ALREADY_REGISTERED) {
         response
           .status(httpStatusCode.CONFLICT)
-          .json({ message: errorMessage.ALREADY_REGISTERED_EMAIL });
+          .json({ message: userErrorMessage.ALREADY_REGISTERED_EMAIL });
         return;
       }
 
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
@@ -89,7 +93,7 @@ export class Register {
     } catch (error) {
       response
         .status(httpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: errorMessage.INTERNAL_SERVER_ERROR });
+        .json({ message: serverErrorMessage.INTERNAL_SERVER_ERROR });
       return;
     }
 
