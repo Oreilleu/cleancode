@@ -57,3 +57,23 @@ export enum sequelizeErrorMessage {
   INVALID_UUID = "L'id n'est pas valide.",
   UNIQUE_CONSTRAINT_ERROR = "La contrainte d'unicité n'est pas respectée.",
 }
+
+
+export enum reservationErrorMessage {
+  RESERVATION_NOT_FOUND = "La réservation n'existe pas.",
+  EMPTY_CLIENT_ID = "L'id du client est obligatoire.",
+  EMPTY_SCOOTER_ID = "L'id du scooter est obligatoire.",
+  EMPTY_START_TIME = "L'heure de début est obligatoire.",
+  EMPTY_END_TIME = "L'heure de fin est obligatoire.",
+  EMPTY_RETURNED_MILES = "Le nombre de miles retourné est obligatoire.",
+  EMPTY_RETURNED_BATTERY_ROTATION = "La rotation de la batterie retournée est obligatoire.",
+  NEGATIVE_RETURNED_MILES = "Le nombre de miles retourné doit être un nombre positif.",
+  NEGATIVE_RETURNED_BATTERY_ROTATION = "La rotation de la batterie retournée doit être un nombre positif.",
+  INVALID_TYPE_CLIENT_ID = "Le type de l'id du client doit être de type string.",
+  INVALID_TYPE_SCOOTER_ID = "Le type de l'id du scooter doit être de type string.",
+  INVALID_TYPE_START_TIME = "Le type de l'heure de début doit être de type Date.",
+  INVALID_TYPE_END_TIME = "Le type de l'heure de fin doit être de type Date.",
+  INVALID_TYPE_RETURNED_MILES = "Le type du nombre de miles retourné doit être de type number.",
+  INVALID_TYPE_RETURNED_BATTERY_ROTATION = "Le type de la rotation de la batterie retournée doit être de type number.",
+  INVALID_TYPE_RETURNED_COMMENTS = "Le type des commentaires retournés doit être de type string."
+}
