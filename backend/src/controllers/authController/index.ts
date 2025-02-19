@@ -3,6 +3,7 @@ import { BaseController } from "../baseController";
 import { Login } from "./handlers/login";
 import { httpMethod } from "../../enums/http-methods.enum";
 import { Register } from "./handlers/register";
+import { VerifyToken } from "./handlers/verifyToken";
 
 export class AuthController extends BaseController {
   public path: string = "/auth";
@@ -10,6 +11,7 @@ export class AuthController extends BaseController {
 
   private login: Login = new Login();
   private register: Register = new Register();
+  private verifyToken: VerifyToken = new VerifyToken();
 
   constructor() {
     super();
@@ -23,6 +25,12 @@ export class AuthController extends BaseController {
         path: "/register",
         method: httpMethod.POST,
         handler: this.register.handler,
+      },
+      {
+        path: "/verify-token",
+        method: httpMethod.GET,
+        handler: this.verifyToken.handler,
+        localMiddlewares: this.verifyToken.localMiddlewares,
       },
     ];
   }
