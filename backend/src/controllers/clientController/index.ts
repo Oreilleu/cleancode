@@ -4,8 +4,8 @@ import { httpMethod } from "../../enums/http-methods.enum";
 import { createClient } from "./handlers/createClient";
 import { getAllClient } from "./handlers/getAllClient";
 
-export class PartController extends BaseController {
-  public path: string = "/part";
+export class ClientController extends BaseController {
+  public path: string = "/client";
   protected routes: Route[];
 
   private createClient: createClient = new createClient();

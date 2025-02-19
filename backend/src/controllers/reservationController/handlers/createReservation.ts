@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
-import { ClientModel } from "../../../services/sequelize/models/client.model";
-import { ZodHandler } from "../../../utils//zod/zod-handler.class";
+import { ReservationModel } from "../../../services/sequelize/models/reservation.model";
+import { ZodHandler } from "../../../utils/zod/zod-handler.class";
 import { ParamsDictionary } from "express-serve-static-core";
 import { Route } from "../../../interfaces/route.interface";
-import { createClientSchema } from "../../../utils/zod/schema/client.schema";
+import { createReservationSchema } from "../../../utils/zod/schema/reservation.schema";
 import { httpStatusCode } from "../../../enums/http-status-code.enum";
-import { ClientBody } from "src/interfaces/client.interface";
+import { ReservationBody } from "src/interfaces/reservation.interface";
 
-export class createClient {
+export class createReservation {
   private zodHandler: ZodHandler = new ZodHandler();
-  private clientModel: ClientModel = new ClientModel();
+  private reservationModel: ReservationModel = new ReservationModel();
 
   public handler: Route["handler"] = async (
-    request: Request<ParamsDictionary, any, ClientBody>,
+    request: Request<ParamsDictionary, any, ReservationBody>,
     response: Response
   ) => {
     const { body } = request;
@@ -20,7 +20,7 @@ export class createClient {
     try {
       const errors = await this.zodHandler.validationBody(
         body,
-        createClientSchema
+        createReservationSchema
       );
 
       if (this.zodHandler.isValidationFail(errors)) {
@@ -37,11 +37,28 @@ export class createClient {
     }
 
     try {
-      const client = await this.clientModel.findByEmail(body.email);
+      const reservation = await this.reservationModel.checkReservationExist(body);
 
-      if (client) {
+      if (reservation) {
         response.status(httpStatusCode.NOT_FOUND).json({
-          message: `Ce Client exsite déjà`,
+          message: `Cette Reservation exsite déjà`,
+        });
+        return;
+      }
+    } catch (error) {
+      response
+        .status(httpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: httpStatusCode.INTERNAL_SERVER_ERROR });
+      return;
+    }
+
+
+    try {
+      const scooter = await this.reservationModel.checkTimeSlotAvailability(body);
+
+      if (!scooter) {
+        response.status(httpStatusCode.NOT_FOUND).json({
+          message: `Ce créneau horaire n'est pas disponible`,
         });
         return;
       }
@@ -53,10 +70,10 @@ export class createClient {
     }
 
     try {
-      const newClient = await this.clientModel.create(body);
+      const newReservation = await this.reservationModel.create(body);
 
       response.status(httpStatusCode.CREATED).json({
-        data: newClient,
+        data: newReservation,
       });
       return;
     } catch (error) {

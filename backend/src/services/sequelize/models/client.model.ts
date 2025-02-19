@@ -1,4 +1,4 @@
-import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
+import { Model, ModelStatic, Sequelize } from "sequelize";
 import { SequelizeService } from "../sequelize.service";
 import {
   ClientBody,
