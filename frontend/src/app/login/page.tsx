@@ -5,7 +5,7 @@ import { LoginIcon } from "@/app/components/icons/LogoIcon";
 import Input from "@/app/components/inputs/Input";
 import { useLogin } from "./hook";
 
-export default function Login() {
+const Login = () => {
   const { onSubmit, register, errors, isLoading } = useLogin();
 
   return (
@@ -57,4 +57,6 @@ export default function Login() {
       </div>
     </div>
   );
-}
+};
+
+export default Login;
