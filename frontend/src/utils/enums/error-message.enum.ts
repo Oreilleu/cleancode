@@ -1,0 +1,20 @@
+export enum userErrorMessage {
+  UNREGISTERED_USER = "Utilisateur non enregistré.",
+  WRONG_PASSWORD = "Mot de passe non valide.",
+  ALREADY_REGISTERED_EMAIL = "Adresse email déja utilisé.",
+  BAD_EMAIL = "L'adresse email n'est pas valide. Ex : email@domain.com",
+  EMPTY_EMAIL = "L'adresse email est obligatoire.",
+  INVALID_TYPE_EMAIL = "Le type de l'email doit être de type string.",
+  EMPTY_PASSWORD = "Le mot de passe est obligatoire.",
+  INVALID_TYPE_PASSWORD = "Le type du mot de passe doit être de type string.",
+  UNSECURED_PASSWORD = "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+  EMPTY_FIRSTNAME = "Le prénom est obligatoire.",
+  INVALID_TYPE_FIRSTNAME = "Le type du prénom doit être de type string.",
+  EMPTY_LASTNAME = "Le nom est obligatoire.",
+  INVALID_TYPE_LASTNAME = "Le type du nom doit être de type string.",
+  LOGIN_SUCCESS = "Vous êtes connecté !",
+}
+
+export enum globalErrorMessage {
+  ERROR_OCCURRED = "Une erreur est survenue.",
+}
