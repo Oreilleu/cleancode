@@ -6,6 +6,8 @@ import "dotenv/config";
 import { Request, Response } from "express";
 import { Scootercontroller } from "./controllers/scooterController";
 import { PartController } from "./controllers/partController";
+import { MaintenanceController } from "./controllers/maintenanceController"
+import { MaintenanceStockPartController } from "./controllers/maintenanceStockPartController"
 
 const app: Application = express();
 
@@ -19,6 +21,8 @@ const AppServer: Server = new Server(app, 3000);
     new AuthController(),
     new Scootercontroller(),
     new PartController(),
+    new MaintenanceController(),
+    new MaintenanceStockPartController(),
   ]);
 
   app.get("/", (req: Request, res: Response) => {
