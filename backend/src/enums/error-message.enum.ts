@@ -49,6 +49,31 @@ export enum partErrorMessage {
   INVALID_TYPE_PART_NAME = "Le type du nom de la pièce doit être de type string.",
 }
 
+export enum maintenanceErrorMessage {
+  MAINTENANCE_NOT_FOUND = "La maintenance n'existe pas.",
+  EMPTY_DESCRIPTION = "La description est obligatoire.",
+  EMPTY_START_DATE = "La date de début est obligatoire.",
+  EMPTY_END_DATE = "La date de fin est obligatoire.",
+  EMPTY_SCOOTER_ID = "L'ID du scooter est obligatoire.",
+  INVALID_TYPE_DESCRIPTION = "Le type de la description doit être de type string.",
+  INVALID_TYPE_START_DATE = "Le type de la date de début doit être de type date.",
+  INVALID_TYPE_END_DATE = "Le type de la date de fin doit être de type date.",
+  INVALID_TYPE_SCOOTER_ID = "Le type de l'ID du scooter doit être de type string.",
+}
+
+export enum maintenanceStockPartErrorMessage {
+  MAINTENANCE_STOCK_PART_NOT_FOUND = "La pièce de maintenance n'existe pas.",
+  EMPTY_QUANTITY = "La quantité est obligatoire.",
+  EMPTY_ID_PART = "L'ID de la pièce est obligatoire.",
+  EMPTY_ID_MAINTENANCE = "L'ID de la maintenance est obligatoire.",
+  NEGATIVE_QUANTITY = "La quantité doit être un nombre positif.",
+  INVALID_TYPE_QUANTITY = "Le type de la quantité doit être de type number.",
+  INVALID_TYPE_ID_PART = "Le type de l'ID de la pièce doit être de type string.",
+  INVALID_TYPE_ID_MAINTENANCE = "Le type de l'ID de la maintenance doit être de type string.",
+  MODEL_UNIQUE = "La pièce de maintenance doit être unique. Une pièce avec ces informations existe déjà.",
+  INVALID_UUID = "L'UUID fourni est invalide.",
+}
+
 export enum tokenErrorMessage {
   INVALID_SESSION_TOKEN = "Token invalide.",
 }
