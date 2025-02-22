@@ -1,6 +1,6 @@
-import { Login } from "@/interfaces/login.interface";
-import { ResponseError } from "@/interfaces/response-error.interface";
-import { AuthenticatedUser } from "@/interfaces/user.interface";
+import { Login } from "@/utils/interfaces/login.interface";
+import { ResponseError } from "@/utils/interfaces/response-error.interface";
+import { AuthenticatedUser } from "@/utils/interfaces/user.interface";
 import {
   globalErrorMessage,
   userErrorMessage,
@@ -70,7 +70,7 @@ export const useLogin = () => {
     if (isAuthenticated) {
       router.push(Routes.SCOOTERS);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     register,

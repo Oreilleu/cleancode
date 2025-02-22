@@ -18,7 +18,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
-  const { isLoading, logout } = useAuth();
+  const { logout } = useAuth();
 
   const navItems = [
     {
@@ -37,8 +37,6 @@ export default function Layout({ children }: { children: ReactNode }) {
       path: "/clients",
     },
   ];
-
-  if (isLoading) return null;
 
   return (
     <div className="flex bg-gray-100 min-h-screen font-sans">
